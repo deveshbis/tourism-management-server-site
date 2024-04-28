@@ -107,7 +107,13 @@ async function run() {
             res.send(result);
         });
 
-        app.delete('/userData/:id', async (req, res) => {
+        // app.delete('/userData/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: new ObjectId(id) };
+        //     const result = await userCollection.deleteOne(query);
+        //     res.send(result);
+        // })
+        app.delete('/deleteData/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await userCollection.deleteOne(query);
@@ -133,9 +139,3 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Tourism management System is running on port: ${port}`);
 })
-
-
-
-
-
-
