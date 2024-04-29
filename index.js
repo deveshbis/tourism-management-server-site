@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const touristSpotCollection = client.db('touristSpotDB').collection('touristSpot');
         
@@ -49,7 +49,18 @@ async function run() {
             res.send(result);
         })
 
+
+
+
+
+        //Country Information 
+        const counteryInfoCollection = client.db('touristSpotDB').collection('countryInfo');
         
+        app.post('/countryData', async (req, res) => {
+            const country = req.body;
+            const result = await counteryInfoCollection.insertOne(country);
+            res.send(result);
+        });
 
 
 
