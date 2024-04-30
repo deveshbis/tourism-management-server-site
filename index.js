@@ -55,12 +55,19 @@ async function run() {
 
         //Country Information 
         const counteryInfoCollection = client.db('touristSpotDB').collection('countryInfo');
-        
+
         app.post('/countryData', async (req, res) => {
             const country = req.body;
             const result = await counteryInfoCollection.insertOne(country);
             res.send(result);
         });
+
+        app.get('/countryData', async (req, res) => {
+            const cursor = counteryInfoCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
 
 
 
@@ -76,6 +83,49 @@ async function run() {
             res.send(users);
         })
 
+
+
+
+        // app.get('/userData', async (req, res) => {
+        //     try {
+        //         const sortOrder = req.query.sortOrder === 'desc' ? -1 : 1;
+        //         const cursor = userCollection.find().sort({ cost: sortOrder }); // Sort by cost
+        //         const users = await cursor.toArray();
+        //         res.send(users);
+        //     } catch (error) {
+        //         console.error('Error fetching user data:', error);
+        //         res.status(500).send('Internal Server Error');
+        //     }
+        // });
+        
+        app.get('/userData', async (req, res) => {
+            try {
+        
+                const sortOrder = req.query.sortOrder === 'desc' ? -1 : 1;
+    
+                const pipeline = [
+                    {
+                        $group: {
+                            _id: null,
+                            avgCost: { $avg: '$cost' }
+                        }
+                    }
+                ];
+        
+                const avgCostResult = await client.db('touristSpotDB').collection('userCollection').aggregate(pipeline).toArray();
+        
+                const cursor = client.db('touristSpotDB').collection('userCollection').find().sort({ cost: sortOrder });
+                const users = await cursor.toArray();
+        
+                res.json({ avgCost: avgCostResult[0].avgCost, users });
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                res.status(500).send('Internal Server Error');
+            }
+        });
+
+
+
         
         app.get('/updateData/:id', async (req, res) => {
             const id = req.params.id;
@@ -83,6 +133,9 @@ async function run() {
             const result = await userCollection.findOne(query);
             res.send(result);
         })
+
+
+        
 
         app.get('/allTouristSingleDetails/:id', async (req, res) => {
             const id = req.params.id;
