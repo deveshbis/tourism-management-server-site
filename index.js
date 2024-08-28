@@ -27,7 +27,7 @@ async function run() {
         // await client.connect();
 
         const touristSpotCollection = client.db('touristSpotDB').collection('touristSpot');
-        
+
 
         app.get('/touristSpot', async (req, res) => {
             const cursor = touristSpotCollection.find();
@@ -72,7 +72,7 @@ async function run() {
 
 
 
-        // // user data
+        // user data
 
         const userCollection = client.db('touristSpotDB').collection('userData');
 
@@ -97,26 +97,26 @@ async function run() {
         //         res.status(500).send('Internal Server Error');
         //     }
         // });
-        
+
         app.get('/userData', async (req, res) => {
             try {
-        
-                const sortOrder = req.query.sortOrder === 'desc' ? -1 : 1;
-    
+
+                const sortOrder = req.query.sortOrder === 'desc' ? 1 : -1;
+
                 const pipeline = [
                     {
                         $group: {
                             _id: null,
-                            avgCost: { $avg: '$cost' }
+                            avgCost: { $avg: { $toInt: '$cost' } }
                         }
                     }
                 ];
-        
+
                 const avgCostResult = await client.db('touristSpotDB').collection('userCollection').aggregate(pipeline).toArray();
-        
+
                 const cursor = client.db('touristSpotDB').collection('userCollection').find().sort({ cost: sortOrder });
                 const users = await cursor.toArray();
-        
+
                 res.json({ avgCost: avgCostResult[0].avgCost, users });
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -125,18 +125,6 @@ async function run() {
         });
 
 
-
-        
-        app.get('/updateData/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: new ObjectId(id) }
-            const result = await userCollection.findOne(query);
-            res.send(result);
-        })
-
-
-        
-
         app.get('/allTouristSingleDetails/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
@@ -144,6 +132,14 @@ async function run() {
             res.send(result);
         })
 
+
+
+        app.get('/updateData/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
 
 
         app.put('/updateData/:id', async (req, res) => {
@@ -168,8 +164,6 @@ async function run() {
             const result = await userCollection.updateOne(filter, tourSpot, options);
             res.send(result);
         })
-
-        
 
         app.post('/userData', async (req, res) => {
             const user = req.body;
