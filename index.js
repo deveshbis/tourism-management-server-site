@@ -83,21 +83,6 @@ async function run() {
             res.send(users);
         })
 
-
-
-
-        // app.get('/userData', async (req, res) => {
-        //     try {
-        //         const sortOrder = req.query.sortOrder === 'desc' ? -1 : 1;
-        //         const cursor = userCollection.find().sort({ cost: sortOrder }); // Sort by cost
-        //         const users = await cursor.toArray();
-        //         res.send(users);
-        //     } catch (error) {
-        //         console.error('Error fetching user data:', error);
-        //         res.status(500).send('Internal Server Error');
-        //     }
-        // });
-
         app.get('/userData', async (req, res) => {
             try {
 
@@ -176,6 +161,17 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
             const result = await userCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
+
+
+
+
+        app.get('/myList/:email', async (req, res) => {
+            console.log(req.params.email);
+            const result = await userCollection.find({email: req.params.email}).toArray();
             res.send(result);
         })
 
