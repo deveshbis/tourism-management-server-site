@@ -23,12 +23,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
 
         const touristSpotCollection = client.db('touristSpotDB').collection('touristSpot');
-
-
         app.get('/touristSpot', async (req, res) => {
             const cursor = touristSpotCollection.find();
             const result = await cursor.toArray();
@@ -50,9 +46,6 @@ async function run() {
         })
 
 
-
-
-
         //Country Information 
         const counteryInfoCollection = client.db('touristSpotDB').collection('countryInfo');
 
@@ -69,13 +62,8 @@ async function run() {
         })
 
 
-
-
-
         // user data
-
         const userCollection = client.db('touristSpotDB').collection('userData');
-
 
         app.get('/userData', async (req, res) => {
             const cursor = userCollection.find();
@@ -163,12 +151,6 @@ async function run() {
             const result = await userCollection.deleteOne(query);
             res.send(result);
         })
-
-
-
-
-
-
         app.get('/myList/:email', async (req, res) => {
             console.log(req.params.email);
             const result = await userCollection.find({email: req.params.email}).toArray();
